@@ -1,0 +1,33 @@
+[build-system]
+requires = ["hatchling"]
+build-backend = "hatchling.build"
+
+[project]
+name = "internal"
+dynamic = ["version"]
+description = ''
+readme = "README.md"
+requires-python = ">=3.12"
+license = "MIT"
+keywords = []
+authors = [
+  { name = "Ahmad A. Khidir", email = "khidirahmad05@gmail.com" },
+]
+dependencies = []
+
+[tool.hatch.version]
+path = "src/internal/__about__.py"
+
+[tool.hatch.envs.types]
+extra-dependencies = [
+  "mypy>=1.0.0",
+]
+
+[tool.coverage.run]
+source_pkgs = ["internal", "tests"]
+branch = true
+parallel = true
+omit = [
+  "src/internal/__about__.py",
+]
+

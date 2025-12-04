@@ -1,0 +1,38 @@
+[build-system]
+requires = ["hatchling"]
+build-backend = "hatchling.build"
+
+[project]
+name = "portfolio"
+dynamic = ["version"]
+description = ''
+readme = "README.md"
+requires-python = ">=3.12"
+license = "MIT"
+keywords = []
+authors = [
+  { name = "Ahmad A. Khidir", email = "khidirahmad05@gmail.com" },
+]
+dependencies = [
+  "aws-cdk-lib>=2.215.0",
+  "constructs>=10.0.0,<11.0.0",
+  # "aws-lambda-powertools[all]",
+  # "types-boto3[full,boto3]",
+  # "internal @ file:portfolio/shared/layers/python_sdk/internal",
+]
+
+[tool.hatch.envs.types]
+extra-dependencies = [
+  "mypy>=1.0.0",
+]
+
+[tool.hatch.version]
+path = "portfolio/__about__.py"
+
+[tool.hatch.metadata]
+allow-direct-references = true
+
+[tool.hatch.envs.default]
+post-install-commands = [
+  "pip install -r portfolio/shared/layers/common/requirements.txt"
+]

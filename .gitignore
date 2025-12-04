@@ -1,0 +1,13 @@
+cdk.out
+**/__pycache__/
+**/*.pyc
+.vscode/
+.idea/
+.DS_Store
+.env
+.env.local
+.env.*.local
+.venv/
+venv/
+__pypackages__/
+portfolio/user_interface
