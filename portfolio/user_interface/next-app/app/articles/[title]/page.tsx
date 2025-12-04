@@ -1,0 +1,55 @@
+import Title, { BigTitle } from '@/components/title'
+import React, { useContext } from 'react'
+import { GrOverview } from 'react-icons/gr'
+import Link from 'next/link'
+import MdEditorMarkdown from '@/components/md-editor-markdown'
+import Image from 'next/image'
+import { BiCalendar } from 'react-icons/bi'
+import PortfolioRepository from '@/lib/repository/base'
+import { PortfolioRepositoryContext } from '@/lib/context/context'
+import usePromise from '@/lib/hooks/promise'
+
+function page({ params }: { params: { title: string } }) {
+    const portfolioRepo = useContext<PortfolioRepository | null>(PortfolioRepositoryContext);
+        const {
+        data: article,
+        isLoading: articleLoading,
+        error: articleError,
+        } = usePromise(portfolioRepo?.getArticleById, [params.title])
+    // const project = projects.find(project => project.title.toLowerCase().trim().replace(RegExp(" ", "g"), "-") === params.title)
+    if (!article) {
+        return <h1>Article not found</h1>
+    }
+    return (
+        <main className=''>
+            {/* <BigTitle className='sm:whitespace-break-spaces text-lg'></BigTitle> */}
+            <h1 className='intro-1 uppercase sm:text-7xl text-2xl font-semibold mx-4 sm:mr-20 text-left leading-tight tracking-tight sm:mb-10 mb-4'>{article?.title}</h1>
+            <p className='intro-2 px-4 mb-10 flex flex-row items-center gap-2'><BiCalendar size={24} /> {article?.updated_at.split("T").at(0)}</p>
+            <section className="flex sm:flex-row flex-col gap-10 sm:mb-20 mb-10 mx-4 sm:items-end items-start">
+                <div className={`intro-2 flex-grow-[2] flex-shrink max-h-[400px] sm:w-auto w-full overflow-hidden`}>
+                    <Image
+                        src={article.image.url}
+                        alt={article.image.alt_text}
+                        width={500}
+                        height={500}
+                        className='w-full h-full object-cover object-center'
+                    />
+                </div>
+                {/* <div className='intro-3 flex-1'>
+                    <ul className='list-disc pl-4 sm:text-3xl text-xl uppercase flex sm:flex-col flex-row flex-wrap gap-y-2 gap-x-12'>
+                        {project?.stacks.map((stack, index) => (
+                            <li key={index}>{stack.name}</li>
+                        ))}
+                    </ul>
+                </div> */}
+            </section>
+            {/* <section className='px-4 sm:mb-20 mb-10'>
+                <h3 id='overview' className='headline sm:text-3xl text-xl uppercase leading-tight sm:whitespace-nowrap flex flex-row gap-2 sm:mb-8 mb-4 [font-family:var(--font-anton)]'><Link href="#overview"><GrOverview /></Link>Overview</h3>
+                <p className='sm:text-[24px] text-[18px] font-medium tracking-[-1px] leading-snug'>{article?.overview}</p>
+            </section> */}
+            <MdEditorMarkdown source={article?.content} />
+        </main>
+    )
+}
+
+export default page

@@ -10,4 +10,3 @@ cdk.out
 .venv/
 venv/
 __pypackages__/
-portfolio/user_interface

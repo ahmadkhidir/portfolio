@@ -4,6 +4,7 @@ from aws_cdk import (
 from constructs import Construct
 
 from .shared.main import Shared
+from .user_interface.main import UserInterface
 
 class PortfolioStack(Stack):
 
@@ -13,4 +14,10 @@ class PortfolioStack(Stack):
         shared = Shared(
             self, "SharedResources", 
             config={}
+        )
+        user_interface = UserInterface(
+            self, "UserInterface",
+            config={
+                "shared": shared,
+            }
         )
