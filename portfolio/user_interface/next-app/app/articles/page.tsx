@@ -8,7 +8,7 @@ import PortfolioRepository from '@/lib/repository/base'
 import { PortfolioRepositoryContext } from '@/lib/context/context'
 import usePromise from '@/lib/hooks/promise'
 
-function page() {
+function Page() {
     const portfolioRepo = useContext<PortfolioRepository | null>(PortfolioRepositoryContext);
     const {
     data: articles,
@@ -29,4 +29,4 @@ function page() {
   )
 }
 
-export default page
+export default Page

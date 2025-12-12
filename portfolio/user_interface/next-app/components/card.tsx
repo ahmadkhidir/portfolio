@@ -87,7 +87,7 @@ export const ProjectCard: React.FC<{ project: ProjectProps, index: number }> = (
                     ))}
                 </ul>
                 <section>
-                    <ArrowFilledLink href={`/projects/${project.title.toLowerCase().trim().replace(RegExp(" ", "g"), "-")}`}>View Details</ArrowFilledLink>
+                    <ArrowFilledLink href={`/projects/details/?title=${project.title.toLowerCase().trim().replace(RegExp(" ", "g"), "-")}`}>View Details</ArrowFilledLink>
                 </section>
             </div>
         </article>
@@ -112,7 +112,7 @@ export const RecentArticleCard = (props: ArticleProps) => {
                 <h2 className={`mb-3 sm:mb-6 uppercase text-lg sm:text-[38px] tracking-[-1px] font-bold leading-tight`}>{props.title}</h2>
                 <p className={`font-light text-base leading-tight flex-1 mb-4 sm:mb-9`}>{props.content}</p>
                 <div className="z-10 relative">
-                    <ArrowFilledLink href={`/articles/${props.title.toLowerCase().trim().replace(RegExp(" ", "g"), "-")}`}>View Details</ArrowFilledLink>
+                    <ArrowFilledLink href={`/articles/details/?title=${props.title.toLowerCase().trim().replace(RegExp(" ", "g"), "-")}`}>View Details</ArrowFilledLink>
                 </div>
             </div>
         </article>
@@ -136,7 +136,7 @@ export const ArticleCard = (props: ArticleProps) => {
                 <h2 className={`mb-3 sm:mb-6 uppercase text-lg sm:text-[38px] tracking-[-1px] font-bold leading-tight`}>{props.title}</h2>
                 <p className={`font-light text-base leading-tight flex-1 mb-4 sm:mb-9`}>{props.content}</p>
                 <div className="z-10 relative">
-                    <ArrowFilledLink href={`/articles/${props.title.toLowerCase().trim().replace(RegExp(" ", "g"), "-")}`}>View Details</ArrowFilledLink>
+                    <ArrowFilledLink href={`/articles/details/?title=${props.title.toLowerCase().trim().replace(RegExp(" ", "g"), "-")}`}>View Details</ArrowFilledLink>
                 </div>
             </div>
         </article>

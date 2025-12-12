@@ -1,3 +1,5 @@
+"use client";
+
 import Title, { BigTitle } from '@/components/title'
 import React, { useContext } from 'react'
 import { GrOverview } from 'react-icons/gr'
@@ -8,14 +10,16 @@ import { BiCalendar } from 'react-icons/bi'
 import PortfolioRepository from '@/lib/repository/base'
 import { PortfolioRepositoryContext } from '@/lib/context/context'
 import usePromise from '@/lib/hooks/promise'
+import { useSearchParams } from 'next/navigation';
 
-function page({ params }: { params: { title: string } }) {
+function Page() {
+    const searchParams = useSearchParams();
     const portfolioRepo = useContext<PortfolioRepository | null>(PortfolioRepositoryContext);
         const {
         data: article,
         isLoading: articleLoading,
         error: articleError,
-        } = usePromise(portfolioRepo?.getArticleById, [params.title])
+        } = usePromise(portfolioRepo?.getArticleById, [searchParams.get("title")])
     // const project = projects.find(project => project.title.toLowerCase().trim().replace(RegExp(" ", "g"), "-") === params.title)
     if (!article) {
         return <h1>Article not found</h1>
@@ -52,4 +56,4 @@ function page({ params }: { params: { title: string } }) {
     )
 }
 
-export default page
+export default Page

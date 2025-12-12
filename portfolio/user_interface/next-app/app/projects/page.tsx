@@ -7,7 +7,7 @@ import usePromise from '@/lib/hooks/promise'
 import PortfolioRepository from '@/lib/repository/base'
 import React, { useContext } from 'react'
 
-function page() {
+function Page() {
     const portfolioRepo = useContext<PortfolioRepository | null>(PortfolioRepositoryContext);
     const {
     data: projects,
@@ -26,4 +26,4 @@ function page() {
     )
 }
 
-export default page
+export default Page

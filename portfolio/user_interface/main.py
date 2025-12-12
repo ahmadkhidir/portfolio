@@ -1,12 +1,16 @@
 from aws_cdk import (
     aws_s3 as s3,
     aws_s3_deployment as s3_deploy,
+    aws_lambda as _lambda,
     aws_cloudfront as cloudfront,
     aws_cloudfront_origins as cloudfront_origins,
     aws_route53 as route53,
     aws_route53_targets as route53_targets,
     aws_certificatemanager as acm,
     RemovalPolicy,
+    BundlingOptions,
+    BundlingFileAccess,
+    BundlingOutput,
     Duration,
     CfnOutput,
 )
@@ -15,10 +19,12 @@ from pathlib import Path
 from typing import TypedDict
 
 from ..shared.main import Shared
+from ..apis.main import Api
 
 
 class UserInterfaceConfig(TypedDict):
     shared: Shared
+    api: Api
 
 
 class UserInterface(Construct):
@@ -31,18 +37,6 @@ class UserInterface(Construct):
             removal_policy=config["shared"].removal_policy,
             auto_delete_objects=True,
         )
-
-        # hosted_zone = route53.HostedZone.from_lookup(
-        #     self, "HostedZone",
-        #     domain_name=""
-        # )
-
-        # certificate = acm.Certificate.from_certificate_arn(
-        #     self, "UserInterfaceCertificate",
-        #     domain_name="",
-        #     subject_alternative_names=[],
-        #     validation=acm.CertificateValidation.from_dns(hosted_zone)
-        # )
 
         # Create CloudFront distribution for the S3 bucket
         distribution = cloudfront.Distribution(
@@ -77,7 +71,25 @@ class UserInterface(Construct):
             self, "DeployUserInterface",
             sources=[
                 s3_deploy.Source.asset(
-                    path=str(Path(__file__).parent.joinpath("next-app/out").resolve())
+                    # path=str(Path(__file__).parent.joinpath("next-app/out").resolve())
+                    path=str(Path(__file__).parent.joinpath("next-app").resolve()),
+                    bundling=BundlingOptions(
+                        bundling_file_access=BundlingFileAccess.VOLUME_COPY,
+                        image=_lambda.Runtime.NODEJS_LATEST.bundling_image,
+                        command=[
+                            "bash", "-c",
+                            "npm install && npm run build && cp -r out/* /asset-output/"
+                        ],
+                        output_type=BundlingOutput.AUTO_DISCOVER,
+                        security_opt="no-new-privileges:true",
+                        network="host",
+                        environment={
+                            "NODE_ENV": "production" if config['shared'].stage['name'] == "prod" else "test",
+                            "NEXT_PUBLIC_API_URL": config['api'].rest_api.api_url.rstrip("/"),
+                        },
+                    ),
+                    exclude=["**/node_modules/**", "**/.next/**", "**/out/**"],
+                    asset_hash=f"ui-{config['shared'].stage['name']}-{config['shared'].stage['version']}"
                 ),
             ],
             destination_bucket=ui_bucket,
@@ -87,7 +99,7 @@ class UserInterface(Construct):
 
         # route53.ARecord(
         #     self, "UserInterfaceApexAliasRecord",
-        #     zone=hosted_zone,
+        #     zone=config['shared'].hosted_zone,
         #     record_name="",
         #     target=route53.RecordTarget.from_alias(
         #         route53_targets.CloudFrontTarget(distribution)
@@ -95,14 +107,14 @@ class UserInterface(Construct):
         # )
         # route53.AaaaRecord(
         #     self, "UserInterfaceApexAliasRecordAAAA",
-        #     zone=hosted_zone,
+        #     zone=config['shared'].hosted_zone,
         #     record_name="",
         #     target=route53.RecordTarget.from_alias(
         #         route53_targets.CloudFrontTarget(distribution)
         #     )
         # )
 
-        self.domain_name = "https://"
+        self.domain_name = "https://" + distribution.domain_name
 
         # Output the CloudFront distribution domain name
         CfnOutput(

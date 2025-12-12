@@ -2,19 +2,37 @@
 
 
 import { BigTitle } from '@/components/title'
+import { PortfolioRepositoryContext } from '@/lib/context/context'
+import usePromise from '@/lib/hooks/promise'
+import PortfolioRepository from '@/lib/repository/base'
 import Link from 'next/link'
-import React, { InputHTMLAttributes, useActionState } from 'react'
+import React, { InputHTMLAttributes, useActionState, useContext } from 'react'
 import { MdEmail, MdLocationPin, MdPhone } from 'react-icons/md'
-import { createEmailAction } from '@/lib/actions'
+// import { createEmailAction } from '@/lib/actions'
 
-function page() {
-    const [state, formAction, pending] = useActionState(createEmailAction, { message: '' });
+function Page() {
+    // const [state, formAction, pending] = useActionState(createEmailAction, { message: '' });
+    const portfolioRepo = useContext<PortfolioRepository | null>(PortfolioRepositoryContext);
+            const {
+            data: _,
+            isLoading: loading,
+            error: error,
+            refetch
+            } = usePromise(portfolioRepo?.sendContactMessage, [], "manual")
+    
+    const onSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
+        e.preventDefault();
+        const formData = new FormData(e.currentTarget);
+        const data = Object.fromEntries(formData.entries());
+        refetch(data);
+        e.currentTarget.reset();
+    }
 
     return (
         <main>
             <BigTitle>Contact Me</BigTitle>
             <section className='px-4 flex sm:flex-row flex-col sm:gap-12 gap-4'>
-                <form action={formAction} className='flex-1 dark:bg-[#15131a] bg-zinc-200 rounded-2xl px-10 py-12 flex sm:flex-row flex-col sm:gap-14 gap-4'>
+                <form onSubmit={onSubmit} className='flex-1 dark:bg-[#15131a] bg-zinc-200 rounded-2xl px-10 py-12 flex sm:flex-row flex-col sm:gap-14 gap-4'>
                     <div className='flex-1 flex flex-col gap-4'>
                         <InputField name='name' label='Your Name' />
                         <InputField name='email' label='Your Email' />
@@ -26,11 +44,11 @@ function page() {
                         <button
                             type='submit'
                             className='text-sm px-10 py-5 bg-blue-500 dark:bg-purple-500 w-fit rounded-full'
-                            disabled={pending}
+                            disabled={loading}
                         >
-                            {pending ? 'Submitting...' : 'Submit Now'}
+                            {loading ? 'Submitting...' : 'Submit Now'}
                         </button>
-                        {state.message && <p className="text-green-500">{state.message}</p>}
+                        {/* {state.message && <p className="text-green-500">{state.message}</p>} */}
                     </div>
                 </form>
                 <aside className='dark:bg-[#15131a] bg-zinc-200 rounded-2xl p-10 flex sm:flex-col flex-row justify-between gap-4 sm:w-64 w-full'>
@@ -58,7 +76,7 @@ function page() {
     )
 }
 
-export default page
+export default Page
 
 
 interface InputFieldProps {

@@ -1,21 +1,26 @@
+"use client";
+
 import Title, { BigTitle } from '@/components/title'
-import React from 'react'
+import React, { useContext } from 'react'
 import { GrOverview } from 'react-icons/gr'
 import Link from 'next/link'
-import { projects } from '@/lib/data'
 import MdEditorMarkdown from '@/components/md-editor-markdown'
 import { ProjectProps } from '@/lib/types'
 import { backendFetch } from '@/lib/fetch'
 import Image from 'next/image'
+import { useSearchParams } from 'next/navigation'
+import PortfolioRepository from '@/lib/repository/base'
+import { PortfolioRepositoryContext } from '@/lib/context/context'
+import usePromise from '@/lib/hooks/promise'
 
-async function page({ params }: { params: { title: string } }) {
-    let project: ProjectProps | undefined;
-    let title = (await params).title.replace(RegExp(" ", "g"), "-")
-    try {
-        project = (await backendFetch(`/projects/?q=${title}`) as Array<ProjectProps>)[0]
-    } catch (error) {
-        console.error(error)
-    }
+function Page() {
+    const searchParams = useSearchParams();
+    const portfolioRepo = useContext<PortfolioRepository | null>(PortfolioRepositoryContext);
+        const {
+        data: project,
+        isLoading: projectLoading,
+        error: projectError,
+        } = usePromise(portfolioRepo?.getProjectById, [searchParams.get("title")])
     // const project = projects.find(project => project.title.toLowerCase().trim().replace(RegExp(" ", "g"), "-") === params.title)
     if (!project) {
         return <h1>Project not found</h1>
@@ -50,4 +55,4 @@ async function page({ params }: { params: { title: string } }) {
     )
 }
 
-export default page
+export default Page

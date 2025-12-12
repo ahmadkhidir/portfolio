@@ -1,3 +1,5 @@
+"use client";
+
 import { createContext } from "react";
 import PortfolioRepository from "../repository/base";
 
